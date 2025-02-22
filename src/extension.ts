@@ -1,9 +1,6 @@
 // src/extension.ts
 import * as vscode from "vscode";
-import simpleGit from "simple-git";
 import { Content, GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI("AIzaSyC9B1noOajIUeFp1B2VFPyq7L8n6VrvP7A");
 
 /**
  * Activates the extension
@@ -14,6 +11,18 @@ export function activate(context: vscode.ExtensionContext): void {
     "gemcommit.suggestCommitMessage",
     async () => {
       try {
+        const config = vscode.workspace.getConfiguration("gemcommit");
+        const apiKey = config.get<string>("apiKey");
+
+        if (!apiKey || apiKey.trim() === "") {
+          vscode.window.showErrorMessage(
+            "GemCommit: Please configure your Google Gemini API key in settings."
+          );
+          return;
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+
         const gitExtension =
           vscode.extensions.getExtension("vscode.git")?.exports;
         if (!gitExtension) {
@@ -36,7 +45,7 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const commitMessage = await generateCommitMessage(stagedDiff);
+        const commitMessage = await generateCommitMessage(genAI, stagedDiff);
 
         // Insert commit message into the Source Control input box
         repository.inputBox.value = commitMessage.trim();
@@ -72,7 +81,10 @@ export function activate(context: vscode.ExtensionContext): void {
  * @param changedFiles - List of changed file names
  * @returns A promise that resolves to a commit message
  */
-async function generateCommitMessage(stagedDiff: string): Promise<string> {
+async function generateCommitMessage(
+  genAI: GoogleGenerativeAI,
+  stagedDiff: string
+): Promise<string> {
   const prompt = `Analyze the following git diff and generate a Conventional Commit message that accurately describes the changes made.
   - The message must be concise and informative, following the Conventional Commits format.
   - The commit message should not exceed 150 characters in the subject line.

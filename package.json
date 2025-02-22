@@ -80,7 +80,6 @@
   },
   "packageManager": "pnpm@10.4.1",
   "dependencies": {
-    "@google/generative-ai": "^0.22.0",
-    "simple-git": "^3.27.0"
+    "@google/generative-ai": "^0.22.0"
   }
 }
