@@ -1,6 +1,6 @@
 # 🚀 GemCommit - AI-Powered Conventional Commit Generator
 
-![GemCommit](images/banner.png)
+![GemCommit] <!-- (images/banner.png) -->
 
 **GemCommit** is a VS Code extension that generates commit messages automatically using **Google Gemini AI**, following the **Conventional Commits** specification.
 
@@ -14,7 +14,7 @@
 
 ## 📸 Screenshots
 
-![GemCommit in Action](images/gemcommit-demo.gif)
+![GemCommit in Action] <!-- (images/gemcommit-demo.gif) -->
 
 ## 📦 Requirements
 
