@@ -102,9 +102,11 @@ async function generateCommitMessage(
   ${stagedDiff}`;
 
   const contents: Content[] = [{ role: "user", parts: [{ text: prompt }] }];
+  const config = vscode.workspace.getConfiguration("gemcommit");
+  const modelName = config.get<string>("model") ?? "gemini-1.5-flash";
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: modelName });
     const { response } = await model.generateContent({ contents });
     return response.text();
   } catch (error) {
