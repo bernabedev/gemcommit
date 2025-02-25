@@ -27,9 +27,6 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:gemcommit.suggestCommitMessage"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
