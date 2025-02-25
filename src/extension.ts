@@ -96,6 +96,7 @@ async function generateCommitMessage(
   - If the commit adds tests, use "test".
   - If the commit updates documentation, use "docs".
   - Do not include unnecessary details; keep it clear and to the point.
+  - Return ONLY the commit message text, without formatting, backticks, or extra characters.
   
   Here is the git diff:
   
