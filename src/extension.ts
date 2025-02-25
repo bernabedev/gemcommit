@@ -1,6 +1,6 @@
 // src/extension.ts
-import * as vscode from "vscode";
 import { Content, GoogleGenerativeAI } from "@google/generative-ai";
+import * as vscode from "vscode";
 
 /**
  * Activates the extension
@@ -111,7 +111,7 @@ async function generateCommitMessage(
     return response.text();
   } catch (error) {
     console.error("Gemini AI Error:", error);
-    return "chore: update files";
+    throw error;
   }
 }
 
