@@ -34,6 +34,16 @@
         "command": "gemcommit.suggestCommitMessage",
         "title": "GemCommit: Generate Commit Message",
         "icon": "$(sparkle)"
+      },
+      {
+        "command": "gemcommit.detailedCommitMessage",
+        "title": "GemCommit: Generate Detailed Commit Message",
+        "icon": "$(pencil)"
+      },
+      {
+        "command": "gemcommit.showCommitHistory",
+        "title": "GemCommit: Show Commit History",
+        "icon": "$(history)"
       }
     ],
     "configuration": {
@@ -48,6 +58,26 @@
           "type": "string",
           "default": "gemini-1.5-flash",
           "description": "The AI model to use for generating commit messages. Example: gemini-1.5-pro"
+        },
+        "gemcommit.customPrompt": {
+          "type": "string",
+          "default": "",
+          "description": "Custom prompt template for generating commit messages. Leave empty to use the default prompt."
+        },
+        "gemcommit.promptBeforeInsert": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show an input dialog to review and edit the generated commit message before inserting it"
+        },
+        "gemcommit.maxHistorySize": {
+          "type": "number",
+          "default": 20,
+          "description": "Maximum number of commit messages to store in history"
+        },
+        "gemcommit.includeProjectContext": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include project context (package.json, recent commits) when generating commit messages"
         }
       }
     },
@@ -58,6 +88,32 @@
           "command": "gemcommit.suggestCommitMessage",
           "group": "navigation",
           "icon": "$(sparkle)"
+        },
+        {
+          "when": "scmProvider == git",
+          "command": "gemcommit.detailedCommitMessage",
+          "group": "navigation",
+          "icon": "$(pencil)"
+        },
+        {
+          "when": "scmProvider == git",
+          "command": "gemcommit.showCommitHistory",
+          "group": "navigation",
+          "icon": "$(history)"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "gemcommit.suggestCommitMessage",
+          "when": "scmProvider == git"
+        },
+        {
+          "command": "gemcommit.detailedCommitMessage",
+          "when": "scmProvider == git"
+        },
+        {
+          "command": "gemcommit.showCommitHistory",
+          "when": "scmProvider == git"
         }
       ]
     }

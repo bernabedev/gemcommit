@@ -7,6 +7,8 @@
 - 🔥 **AI-powered commit message generation** based on staged changes.
 - 📝 **Follows Conventional Commits** (`feat`, `fix`, `docs`, `chore`, etc.).
 - ⚡ **One-click commit message insertion** in the Source Control input.
+- 🖊️ **Detailed commit messages** with body and breaking changes support.
+- 📜 **Commit history tracking** for easy reuse of previous messages.
 - 🌐 **Supports customization of AI model and API key** in settings.
 - 🎨 **Seamless integration with VS Code's Source Control UI.**
 
@@ -28,10 +30,22 @@
 
 ## 🔧 Extension Settings
 
-| Setting            | Description                              |
-| ------------------ | ---------------------------------------- |
-| `gemcommit.apiKey` | API key for Google Gemini AI.            |
-| `gemcommit.model`  | AI model for generating commit messages. |
+| Setting                          | Description                                                   |
+|----------------------------------|---------------------------------------------------------------|
+| `gemcommit.apiKey`               | API key for Google Gemini AI.                                |
+| `gemcommit.model`                | AI model for generating commit messages.                     |
+| `gemcommit.customPrompt`         | Custom prompt template for commit messages.                  |
+| `gemcommit.promptBeforeInsert`   | Enables review before inserting commit messages.             |
+| `gemcommit.maxHistorySize`       | Maximum number of commit messages stored in history.         |
+| `gemcommit.includeProjectContext`| Includes project details (e.g., package.json) in AI prompts. |
+
+## 🛠 Commands
+
+| Command                                  | Description                                             |
+|------------------------------------------|---------------------------------------------------------|
+| `GemCommit: Generate Commit Message`     | Generates a Conventional Commit message.               |
+| `GemCommit: Generate Detailed Commit Message` | Generates a detailed commit with body & scope.  |
+| `GemCommit: Show Commit History`         | Displays previous commit messages for reuse.           |
 
 ## 🛠 Known Issues
 
@@ -44,6 +58,8 @@
 - Initial release with AI-powered commit message generation.
 - VS Code Source Control integration.
 - Conventional Commits support.
+- Commit history tracking.
+- Review before inserting commit messages.
 
 ## 📜 Following Extension Guidelines
 
