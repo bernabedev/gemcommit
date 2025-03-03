@@ -56,8 +56,8 @@
         },
         "gemcommit.model": {
           "type": "string",
-          "default": "gemini-1.5-flash",
-          "description": "The AI model to use for generating commit messages. Example: gemini-1.5-pro"
+          "default": "gemini-2.0-flash",
+          "description": "The AI model to use for generating commit messages. Example: gemini-2.0-flash"
         },
         "gemcommit.customPrompt": {
           "type": "string",
