@@ -28,6 +28,11 @@
     "Other"
   ],
   "main": "./out/extension.js",
+  "activationEvents": [
+    "onCommand:gemcommit.suggestCommitMessage",
+    "onCommand:gemcommit.detailedCommitMessage",
+    "onCommand:gemcommit.showCommitHistory"
+  ],
   "contributes": {
     "commands": [
       {
