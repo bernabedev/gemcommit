@@ -84,7 +84,8 @@ export function activate(context: vscode.ExtensionContext): void {
             );
 
             // Allow editing before inserting
-            const shouldEdit = config.get<boolean>("promptBeforeInsert") ?? false;
+            const shouldEdit =
+              config.get<boolean>("promptBeforeInsert") ?? false;
             if (shouldEdit) {
               const editedMessage = await vscode.window.showInputBox({
                 prompt: "Review and edit the commit message if needed",
@@ -166,8 +167,12 @@ export function activate(context: vscode.ExtensionContext): void {
           }
 
           const projectContext = await getProjectContext();
-          const commitConfig = await generateDetailedCommit(genAI, stagedDiff, projectContext);
-          
+          const commitConfig = await generateDetailedCommit(
+            genAI,
+            stagedDiff,
+            projectContext
+          );
+
           const commitMessage = await showCommitEditor(commitConfig);
           if (commitMessage) {
             repository.inputBox.value = commitMessage;
@@ -183,12 +188,9 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "gemcommit.showCommitHistory",
-      async () => {
-        showCommitHistory(context);
-      }
-    )
+    vscode.commands.registerCommand("gemcommit.showCommitHistory", async () => {
+      showCommitHistory(context);
+    })
   );
 
   vscode.commands.executeCommand("setContext", "scmProvider", "git");
@@ -201,16 +203,22 @@ async function getProjectContext(): Promise<string> {
   try {
     // Get the package.json file if it exists
     const rootPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-    if (!rootPath) {return "";}
+    if (!rootPath) {
+      return "";
+    }
 
     let projectInfo = "";
     const packageJsonPath = path.join(rootPath, "package.json");
-    
+
     if (fs.existsSync(packageJsonPath)) {
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
       projectInfo += `Project name: ${packageJson.name}\n`;
-      projectInfo += `Description: ${packageJson.description || "Not available"}\n`;
-      projectInfo += `Dependencies: ${Object.keys(packageJson.dependencies || {}).join(", ")}\n`;
+      projectInfo += `Description: ${
+        packageJson.description || "Not available"
+      }\n`;
+      projectInfo += `Dependencies: ${Object.keys(
+        packageJson.dependencies || {}
+      ).join(", ")}\n`;
     }
 
     // Get the last commit
@@ -243,8 +251,10 @@ async function generateCommitMessage(
 ): Promise<string> {
   const config = vscode.workspace.getConfiguration("gemcommit");
   const customPrompt = config.get<string>("customPrompt") || "";
-  
-  const prompt = `${customPrompt || `Analyze the following git diff and generate a Conventional Commit message that accurately describes the changes made.
+
+  const prompt = `${
+    customPrompt ||
+    `Analyze the following git diff and generate a Conventional Commit message that accurately describes the changes made.
   - The message must be concise and informative, following the Conventional Commits format.
   - The commit message should not exceed 150 characters in the subject line.
   - Use imperative mood (e.g., "fix bug" instead of "fixed bug").
@@ -255,7 +265,8 @@ async function generateCommitMessage(
   - If the commit adds tests, use "test".
   - If the commit updates documentation, use "docs".
   - Do not include unnecessary details; keep it clear and to the point.
-  - Return ONLY the commit message text, without formatting, backticks, or extra characters.`}
+  - Return ONLY the commit message text, without formatting, backticks, or extra characters.`
+  }
   
   ${projectContext ? `\n\nProject context:\n${projectContext}` : ""}
   
@@ -318,35 +329,39 @@ async function generateDetailedCommit(
     const responseText = response.text();
 
     let jsonText = responseText;
-    
+
     if (responseText.includes("```")) {
       const match = responseText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
       if (match && match[1]) {
         jsonText = match[1].trim();
       }
     }
-    
+
     // Get JSON object
-    const startIndex = jsonText.indexOf('{');
-    const endIndex = jsonText.lastIndexOf('}') + 1;
-    
+    const startIndex = jsonText.indexOf("{");
+    const endIndex = jsonText.lastIndexOf("}") + 1;
+
     if (startIndex !== -1 && endIndex > startIndex) {
       jsonText = jsonText.substring(startIndex, endIndex);
     }
-    
+
     try {
       return JSON.parse(jsonText) as CommitConfiguration;
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
       console.error("Attempted to parse:", jsonText);
-      
+
       // Return a default commit if parsing fails
       return {
         type: "feat",
         description: "automated commit message",
-        body: "Could not parse AI response, but changes were detected in: " + 
-              stagedDiff.split('\n').filter(line => line.startsWith('diff --git')).join(', '),
-        breakingChanges: false
+        body:
+          "Could not parse AI response, but changes were detected in: " +
+          stagedDiff
+            .split("\n")
+            .filter((line) => line.startsWith("diff --git"))
+            .join(", "),
+        breakingChanges: false,
       };
     }
   } catch (error) {
@@ -358,21 +373,25 @@ async function generateDetailedCommit(
 /**
  * Displays an editor to modify the detailed commit
  */
-async function showCommitEditor(commitConfig: CommitConfiguration): Promise<string | undefined> {
+async function showCommitEditor(
+  commitConfig: CommitConfiguration
+): Promise<string | undefined> {
   try {
     if (!commitConfig.type || !commitConfig.description) {
       console.error("Invalid commit config received:", commitConfig);
-      vscode.window.showErrorMessage("Error: Received invalid commit data from AI.");
-      
+      vscode.window.showErrorMessage(
+        "Error: Received invalid commit data from AI."
+      );
+
       commitConfig = {
         type: commitConfig.type || "feat",
         scope: commitConfig.scope,
         description: commitConfig.description || "automated commit message",
         body: commitConfig.body || "",
-        breakingChanges: !!commitConfig.breakingChanges
+        breakingChanges: !!commitConfig.breakingChanges,
       };
     }
-    
+
     // Create a new webview panel
     const panel = vscode.window.createWebviewPanel(
       "gemcommitEditor",
@@ -382,62 +401,116 @@ async function showCommitEditor(commitConfig: CommitConfiguration): Promise<stri
     );
 
     // Escape values to prevent HTML issues
-    const escapeHtml = (str: string) => str.replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+    const escapeHtml = (str: string) =>
+      str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-    panel.webview.html = `
-      <!DOCTYPE html>
+    panel.webview.html = `<!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Edit Commit Message</title>
         <style>
-          body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); background-color: var(--vscode-editor-background); padding: 20px; }
-          label { display: block; margin-top: 10px; color: var(--vscode-foreground); }
-          input, textarea { width: 100%; padding: 5px; margin-bottom: 10px; background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); }
-          button { padding: 8px 16px; margin-right: 10px; cursor: pointer; background-color: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; }
-          button:hover { background-color: var(--vscode-button-hoverBackground); }
-          pre { background-color: var(--vscode-textBlockQuote-background); padding: 10px; border-radius: 4px; }
+          body {
+            font-family: var(--vscode-font-family);
+            color: var(--vscode-foreground);
+            background-color: var(--vscode-editor-background);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 600px;
+          }
+          label {
+            color: var(--vscode-foreground);
+            margin-bottom: 5px;
+            display: block;
+          }
+          input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+            border: 1px solid var(--vscode-input-border);
+            border-radius: 4px;
+          }
+          button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+          }
+          button:hover {
+            background-color: var(--vscode-button-hoverBackground);
+          }
+          pre {
+            background-color: var(--vscode-textBlockQuote-background);
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+          }
+          .flex-row {
+            display: flex;
+            gap: 10px;
+          }
+          .flex-row > div {
+            flex: 1;
+          }
         </style>
       </head>
       <body>
         <h2>Edit Conventional Commit</h2>
         <form id="commitForm">
-          <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
+          <div class="flex-row">
+            <div>
               <label for="type">Type:</label>
-              <input type="text" id="type" value="${escapeHtml(commitConfig.type)}" required>
+              <input type="text" id="type" value="${escapeHtml(
+                commitConfig.type
+              )}" required>
             </div>
-            <div style="flex: 1;">
+            <div>
               <label for="scope">Scope (optional):</label>
-              <input type="text" id="scope" value="${escapeHtml(commitConfig.scope || '')}">
+              <input type="text" id="scope" value="${escapeHtml(
+                commitConfig.scope || ""
+              )}">
             </div>
           </div>
-          
+      
           <label for="description">Description:</label>
-          <input type="text" id="description" value="${escapeHtml(commitConfig.description)}" required>
-          
+          <input type="text" id="description" value="${escapeHtml(
+            commitConfig.description
+          )}" required>
+      
           <label for="body">Body:</label>
-          <textarea id="body" rows="5">${escapeHtml(commitConfig.body || '')}</textarea>
-          
-          <div>
-            <input type="checkbox" id="breaking" ${commitConfig.breakingChanges ? 'checked' : ''}>
-            <label for="breaking" style="display: inline;">Breaking Changes</label>
+          <textarea id="body" rows="5">${escapeHtml(
+            commitConfig.body || ""
+          )}</textarea>
+      
+          <div style="display: flex; align-items: center;">
+            <input type="checkbox" id="breaking" ${
+              commitConfig.breakingChanges ? "checked" : ""
+            } style="width: 20px;margin-bottom: 0;">
+            <label for="breaking" style="display: inline;margin-bottom: 0;">Breaking Changes</label>
           </div>
-          
+      
           <h3>Preview:</h3>
-          <pre id="preview" style="white-space: pre-wrap;"></pre>
-          
-          <div style="margin-top: 20px;">
+          <pre id="preview"></pre>
+      
+          <div>
             <button type="submit">Apply</button>
             <button type="button" id="cancelBtn">Cancel</button>
           </div>
         </form>
-        
+      
         <script>
           const typeInput = document.getElementById('type');
           const scopeInput = document.getElementById('scope');
@@ -445,36 +518,32 @@ async function showCommitEditor(commitConfig: CommitConfiguration): Promise<stri
           const bodyInput = document.getElementById('body');
           const breakingInput = document.getElementById('breaking');
           const previewElement = document.getElementById('preview');
-          
+      
           function updatePreview() {
             const type = typeInput.value;
             const scope = scopeInput.value ? \`(\${scopeInput.value})\` : '';
             const breaking = breakingInput.checked ? '!' : '';
             const description = descriptionInput.value;
             const body = bodyInput.value;
-            
+      
             let preview = \`\${type}\${scope}\${breaking}: \${description}\`;
             if (body) {
-              preview += \`\\n\\n\${body}\`;
+              preview += \`\n\n\${body}\`;
             }
-            
-            // Añadir pie de página para BREAKING CHANGE si está marcado
+      
             if (breakingInput.checked && !body.toLowerCase().includes('breaking change')) {
-              preview += \`\\n\\nBREAKING CHANGE: This commit introduces breaking changes.\`;
+              preview += \`\n\nBREAKING CHANGE: This commit introduces breaking changes.\`;
             }
-            
+      
             previewElement.textContent = preview;
           }
-          
-          // Update preview on input changes
+      
           [typeInput, scopeInput, descriptionInput, bodyInput, breakingInput].forEach(input => {
             input.addEventListener('input', updatePreview);
           });
-          
-          // Initial preview
+      
           updatePreview();
-          
-          // Form submission
+      
           document.getElementById('commitForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const vscode = acquireVsCodeApi();
@@ -483,8 +552,7 @@ async function showCommitEditor(commitConfig: CommitConfiguration): Promise<stri
               commitMessage: previewElement.textContent
             });
           });
-          
-          // Cancel button
+      
           document.getElementById('cancelBtn').addEventListener('click', () => {
             const vscode = acquireVsCodeApi();
             vscode.postMessage({
@@ -494,16 +562,15 @@ async function showCommitEditor(commitConfig: CommitConfiguration): Promise<stri
         </script>
       </body>
       </html>
-    `;
+      `;
 
-    
     return new Promise((resolve) => {
       panel.webview.onDidReceiveMessage(
-        message => {
-          if (message.command === 'applyCommit') {
+        (message) => {
+          if (message.command === "applyCommit") {
             resolve(message.commitMessage);
             panel.dispose();
-          } else if (message.command === 'cancel') {
+          } else if (message.command === "cancel") {
             resolve(undefined);
             panel.dispose();
           }
@@ -514,7 +581,11 @@ async function showCommitEditor(commitConfig: CommitConfiguration): Promise<stri
     });
   } catch (error) {
     console.error("Error displaying commit editor:", error);
-    vscode.window.showErrorMessage(`Error displaying commit editor: ${error instanceof Error ? error.message : String(error)}`);
+    vscode.window.showErrorMessage(
+      `Error displaying commit editor: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
     return undefined;
   }
 }
@@ -523,12 +594,15 @@ async function showCommitEditor(commitConfig: CommitConfiguration): Promise<stri
  * Saves a generated commit to the history
  */
 
-function saveToCommitHistory(commitMessage: string, context: vscode.ExtensionContext): void {
+function saveToCommitHistory(
+  commitMessage: string,
+  context: vscode.ExtensionContext
+): void {
   try {
     const history = context.globalState.get<string[]>("commitHistory", []);
-    
+
     const updatedHistory = [commitMessage, ...history.slice(0, 19)]; // Mantener últimos 20
-    
+
     context.globalState.update("commitHistory", updatedHistory);
   } catch (error) {
     console.error("Error saving to commit history:", error);
@@ -538,18 +612,20 @@ function saveToCommitHistory(commitMessage: string, context: vscode.ExtensionCon
 /**
  * Displays the history of generated commits
  */
-async function showCommitHistory(context: vscode.ExtensionContext): Promise<void> {
+async function showCommitHistory(
+  context: vscode.ExtensionContext
+): Promise<void> {
   const history = context.globalState.get<string[]>("commitHistory", []);
-  
+
   if (history.length === 0) {
     vscode.window.showInformationMessage("No commit history available yet.");
     return;
   }
-  
+
   const selectedCommit = await vscode.window.showQuickPick(history, {
-    placeHolder: "Select a commit message to reuse"
+    placeHolder: "Select a commit message to reuse",
   });
-  
+
   if (selectedCommit) {
     const gitExtension = vscode.extensions.getExtension("vscode.git")?.exports;
     if (gitExtension) {
@@ -557,7 +633,9 @@ async function showCommitHistory(context: vscode.ExtensionContext): Promise<void
       const repository = gitAPI.repositories[0];
       if (repository) {
         repository.inputBox.value = selectedCommit;
-        vscode.window.showInformationMessage("Commit message inserted from history.");
+        vscode.window.showInformationMessage(
+          "Commit message inserted from history."
+        );
       }
     }
   }
