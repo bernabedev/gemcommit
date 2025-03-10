@@ -321,7 +321,7 @@ async function generateDetailedCommit(
 
   const contents: Content[] = [{ role: "user", parts: [{ text: prompt }] }];
   const config = vscode.workspace.getConfiguration("gemcommit");
-  const modelName = config.get<string>("model") ?? "gemini-1.5-flash";
+  const modelName = config.get<string>("model") ?? "gemini-2.0-flash";
 
   try {
     const model = genAI.getGenerativeModel({ model: modelName });
