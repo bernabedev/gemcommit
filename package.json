@@ -22,17 +22,12 @@
     "conventional commits"
   ],
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Other"
   ],
   "main": "./out/extension.js",
-  "activationEvents": [
-    "onCommand:gemcommit.suggestCommitMessage",
-    "onCommand:gemcommit.detailedCommitMessage",
-    "onCommand:gemcommit.showCommitHistory"
-  ],
   "contributes": {
     "commands": [
       {
@@ -89,19 +84,16 @@
     "menus": {
       "scm/title": [
         {
-          "when": "scmProvider == git",
           "command": "gemcommit.suggestCommitMessage",
           "group": "navigation",
           "icon": "$(sparkle)"
         },
         {
-          "when": "scmProvider == git",
           "command": "gemcommit.detailedCommitMessage",
           "group": "navigation",
           "icon": "$(pencil)"
         },
         {
-          "when": "scmProvider == git",
           "command": "gemcommit.showCommitHistory",
           "group": "navigation",
           "icon": "$(history)"
