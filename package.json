@@ -101,16 +101,13 @@
       ],
       "commandPalette": [
         {
-          "command": "gemcommit.suggestCommitMessage",
-          "when": "scmProvider == git"
+          "command": "gemcommit.suggestCommitMessage"
         },
         {
-          "command": "gemcommit.detailedCommitMessage",
-          "when": "scmProvider == git"
+          "command": "gemcommit.detailedCommitMessage"
         },
         {
-          "command": "gemcommit.showCommitHistory",
-          "when": "scmProvider == git"
+          "command": "gemcommit.showCommitHistory"
         }
       ]
     }
