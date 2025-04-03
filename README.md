@@ -30,22 +30,23 @@
 
 ## 🔧 Extension Settings
 
-| Setting                          | Description                                                   |
-|----------------------------------|---------------------------------------------------------------|
-| `gemcommit.apiKey`               | API key for Google Gemini AI.                                |
-| `gemcommit.model`                | AI model for generating commit messages.                     |
-| `gemcommit.customPrompt`         | Custom prompt template for commit messages.                  |
-| `gemcommit.promptBeforeInsert`   | Enables review before inserting commit messages.             |
-| `gemcommit.maxHistorySize`       | Maximum number of commit messages stored in history.         |
-| `gemcommit.includeProjectContext`| Includes project details (e.g., package.json) in AI prompts. |
+| Setting                           | Description                                                  |
+| --------------------------------- | ------------------------------------------------------------ |
+| `gemcommit.apiKey`                | API key for Google Gemini AI.                                |
+| `gemcommit.model`                 | AI model for generating commit messages.                     |
+| `gemcommit.customPrompt`          | Custom prompt template for commit messages.                  |
+| `gemcommit.promptBeforeInsert`    | Enables review before inserting commit messages.             |
+| `gemcommit.maxHistorySize`        | Maximum number of commit messages stored in history.         |
+| `gemcommit.includeProjectContext` | Includes project details (e.g., package.json) in AI prompts. |
+| `gemcommit.commitLanguage`        | Language for commit messages (e.g., english, spanish).       |
 
 ## 🛠 Commands
 
-| Command                                  | Description                                             |
-|------------------------------------------|---------------------------------------------------------|
-| `GemCommit: Generate Commit Message`     | Generates a Conventional Commit message.               |
-| `GemCommit: Generate Detailed Commit Message` | Generates a detailed commit with body & scope.  |
-| `GemCommit: Show Commit History`         | Displays previous commit messages for reuse.           |
+| Command                                       | Description                                    |
+| --------------------------------------------- | ---------------------------------------------- |
+| `GemCommit: Generate Commit Message`          | Generates a Conventional Commit message.       |
+| `GemCommit: Generate Detailed Commit Message` | Generates a detailed commit with body & scope. |
+| `GemCommit: Show Commit History`              | Displays previous commit messages for reuse.   |
 
 ## 🛠 Known Issues
 
