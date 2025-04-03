@@ -252,10 +252,14 @@ async function generateCommitMessage(
   const config = vscode.workspace.getConfiguration("gemcommit");
   const customPrompt = config.get<string>("customPrompt") || "";
 
+  const language = config.get<string>("commitLanguage") ?? "english";
+  const languageInstruction = `Generate the commit message content (description, body if applicable) in ${language}.`;
+
   const prompt = `${
     customPrompt ||
     `Analyze the following git diff and generate a Conventional Commit message that accurately describes the changes made.
   - The message must be concise and informative, following the Conventional Commits format.
+  - ${languageInstruction}
   - The commit message should not exceed 150 characters in the subject line.
   - Use imperative mood (e.g., "fix bug" instead of "fixed bug").
   - Include a scope if relevant (e.g., "feat(auth): add login validation").
@@ -295,12 +299,18 @@ async function generateDetailedCommit(
   stagedDiff: string,
   projectContext: string
 ): Promise<CommitConfiguration> {
+  const config = vscode.workspace.getConfiguration("gemcommit");
+  const language = config.get<string>("commitLanguage") ?? "english";
+  const languageInstruction = `The 'description' and 'body' fields in the JSON output MUST be written in ${language}.`;
+
   const prompt = `Analyze the following git diff and generate a detailed Conventional Commit message with the following parts:
   1. Type (e.g., feat, fix, refactor, docs, style, test, etc.)
   2. Scope (optional, in parentheses)
   3. Short description
   4. Detailed body explaining the changes
   5. Note any breaking changes
+
+  ${languageInstruction}
   
   Return the result in JSON format with the following properties:
   {
@@ -320,7 +330,6 @@ async function generateDetailedCommit(
   ${stagedDiff}`;
 
   const contents: Content[] = [{ role: "user", parts: [{ text: prompt }] }];
-  const config = vscode.workspace.getConfiguration("gemcommit");
   const modelName = config.get<string>("model") ?? "gemini-2.0-flash";
 
   try {
