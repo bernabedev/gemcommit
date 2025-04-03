@@ -2,7 +2,7 @@
   "name": "gemcommit",
   "displayName": "GemCommit",
   "description": "AI-powered Conventional Commit Generator using Google Gemini.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": "Freilyn Bernabé <freilyn@bernabe.dev>",
   "publisher": "bernabe",
   "repository": {
