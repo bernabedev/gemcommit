@@ -78,6 +78,25 @@
           "type": "boolean",
           "default": true,
           "description": "Include project context (package.json, recent commits) when generating commit messages"
+        },
+        "gemcommit.commitLanguage": {
+          "type": "string",
+          "description": "The language for the generated commit messages.",
+          "default": "english",
+          "enum": [
+            "english",
+            "spanish",
+            "french",
+            "german",
+            "portuguese"
+          ],
+          "enumDescriptions": [
+            "English (Default)",
+            "Spanish (Español)",
+            "French (Français)",
+            "German (Deutsch)",
+            "Portuguese (Português)"
+          ]
         }
       }
     },
